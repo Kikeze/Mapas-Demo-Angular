@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 
+import { PlacesApiClient } from 'src/app/maps/api/placesApiClient';
+import { SearchResult, Feature } from 'src/app/maps/interfaces/maps.interfaces';
+
 
 @Injectable({
     providedIn: 'root'
@@ -8,7 +11,12 @@ export class PlacesService {
 
     public userLocation?: [number, number];
 
-    constructor() {
+    public isLoading: boolean = false;
+    public features: Feature[] = [];
+
+    constructor(
+        private PlaceApi: PlacesApiClient
+    ) {
         this.getUserLocation();
     }
 
@@ -28,6 +36,24 @@ export class PlacesService {
                     reject();
                 }
             )
+        });
+    }
+
+    searchPlaces(query: string) {
+        if( !(query && query.length >= 1) ) {
+            this.features = [];
+            this.isLoading = false;
+            return;
+        }
+
+        this.isLoading = true;
+
+        this.PlaceApi.proximity = this.userLocation!;
+        this.PlaceApi.get<SearchResult>(`/${query}.json`).subscribe({
+            next: (v) => {
+                this.features = v.features;
+                this.isLoading = false;
+            }
         });
     }
 

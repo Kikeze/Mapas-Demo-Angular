@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import * as Mapboxgl from 'mapbox-gl';
 
-import { PlacesService } from 'src/app/maps/services';
+import { PlacesService, MapService } from 'src/app/maps/services';
 
 
 @Component({
@@ -15,7 +15,8 @@ export class MapViewComponent implements OnInit, AfterViewInit {
     mainMap!: Mapboxgl.Map;
 
     constructor(
-        private PlacesSvc: PlacesService
+        private PlacesSvc: PlacesService,
+        private MapSvc: MapService
     ) {
         // Do nothing
     }
@@ -31,6 +32,18 @@ export class MapViewComponent implements OnInit, AfterViewInit {
             center: this.PlacesSvc.userLocation,
             zoom: 16
         });
+
+        const popup = new Mapboxgl.Popup().setHTML(`
+            <h6>Informacion de marker</h6>
+            <span>Esta es la informacion del marker</span>
+        `);
+
+        const marker = new Mapboxgl.Marker({color: "red"})
+            .setLngLat(this.PlacesSvc.userLocation!)
+            .setPopup(popup)
+            .addTo(this.mainMap);
+
+        this.MapSvc.setMap(this.mainMap);
     }
 
 }
