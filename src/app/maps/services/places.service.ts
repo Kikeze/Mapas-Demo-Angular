@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { PlacesApiClient } from 'src/app/maps/api/placesApiClient';
 import { SearchResult, Feature } from 'src/app/maps/interfaces/maps.interfaces';
+import { MapService } from 'src/app/maps/services';
 
 
 @Injectable({
@@ -15,7 +16,8 @@ export class PlacesService {
     public features: Feature[] = [];
 
     constructor(
-        private PlaceApi: PlacesApiClient
+        private PlaceApi: PlacesApiClient,
+        private MapSvc: MapService
     ) {
         this.getUserLocation();
     }
@@ -53,8 +55,14 @@ export class PlacesService {
             next: (v) => {
                 this.features = v.features;
                 this.isLoading = false;
+
+                this.MapSvc.createMarkers( this.features, this.userLocation! );
             }
         });
+    }
+
+    hidePlaces() {
+        this.features = [];
     }
 
 }

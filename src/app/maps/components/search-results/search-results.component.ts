@@ -38,5 +38,12 @@ export class SearchResultsComponent implements OnInit {
         this.MapSvc.flyTo([lng, lat]);
     }
 
+    direccion(place: Feature) {
+        this.PlacesSvc.hidePlaces();
+
+        const [lng, lat] = place.center;
+        this.MapSvc.getRoute( this.PlacesSvc.userLocation!, [lng, lat]);
+    }
+
 }
 
